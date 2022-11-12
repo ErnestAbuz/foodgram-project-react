@@ -6,14 +6,10 @@ __pycache__/
 # C extensions
 *.so
 
-# migrations
-_migrations/*
-!_migrations/__init__.py
-/backend/tests
-
 # Distribution / packaging
 .Python
 build/
+node_modules/
 develop-eggs/
 dist/
 downloads/

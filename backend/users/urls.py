@@ -1,14 +1,15 @@
 from django.urls import include, path
-from rest_framework.routers import DefaultRouter
+from rest_framework.routers import SimpleRouter
+from users import views
 
-from .views import UserViewSetForRequests
+app_name = 'users'
 
-app_name = 'api'
+router_v1 = SimpleRouter()
+router_v1.register('users', views.CustomUserViewSet)
 
-router_v1 = DefaultRouter()
-router_v1.register('users', UserViewSetForRequests)
 
 urlpatterns = [
     path('', include(router_v1.urls)),
+    path('', include('djoser.urls')),
     path('auth/', include('djoser.urls.authtoken')),
 ]
