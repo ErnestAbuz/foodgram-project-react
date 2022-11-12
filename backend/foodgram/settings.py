@@ -1,14 +1,12 @@
 import os
 
-from dotenv import load_dotenv
+from dotenv import find_dotenv, load_dotenv
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-dotenv_file = os.path.join(BASE_DIR, "backend", "secrets.env")
+load_dotenv(find_dotenv())
 
-load_dotenv(dotenv_file)
-
-SECRET_KEY = os.environ.get('SECRET_KEY', default='6-4s-tlsce%dyefau+ljcd_x*w!tfu+9=#e8j8^#1=71i%z2iw')
+SECRET_KEY = os.environ.get('SECRET_KEY', default='SECRET_KEY')
 
 DEBUG = False
 
