@@ -2,11 +2,11 @@ import os
 
 from dotenv import find_dotenv, load_dotenv
 
-load_dotenv(find_dotenv())
-
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-SECRET_KEY = os.getenv('SECRET_KEY', default='SECRET_KEY')
+load_dotenv(find_dotenv())
+
+SECRET_KEY = os.environ.get('SECRET_KEY', default='SECRET_KEY')
 
 DEBUG = False
 
@@ -68,7 +68,7 @@ DATABASES = {
         # 'ENGINE': 'django.db.backends.sqlite3',
         # 'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
         'ENGINE': os.getenv('DB_ENGINE'),
-        'NAME': os.getenv('DB_NAME', default='admin'),
+        'NAME': os.getenv('DB_NAME'),
         'USER': os.getenv('POSTGRES_USER'),
         'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
         'HOST': os.getenv('DB_HOST'),
