@@ -21,7 +21,7 @@
 git clone git@github.com:ErnestAbuz/foodgram-project-react.git
 ```
 
-2. Устанавливаем Docker (если отсутствует) [Docker](https://docs.docker.com/engine/install/)
+2. Устанавливаем [Docker](https://docs.docker.com/engine/install/) (если отсутствует)
 
 3. В директории infra/ создаем файл .env и заполняем переменными окружения по принципу как в .env.example
 
