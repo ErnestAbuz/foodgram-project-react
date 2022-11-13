@@ -1,6 +1,6 @@
 from api.filters import IngredientSearchFilterSet, RecipeFilterSet
-from api.serializers import (IngredientSerializer, RecipeCreateSerializer,
-                             RecipeSerializer, TagSerializer)
+from api.serializers import (IngredientSerializer, RecipeSerializer,
+                             TagSerializer)
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from recipes.models import Favorite, Ingredient, Recipe, ShoppingCart, Tag
@@ -35,12 +35,9 @@ class RecipeViewSet(viewsets.ModelViewSet):
     serializer_class = RecipeSerializer
     filterset_class = RecipeFilterSet
 
-    def create(self, request):
-        request.data['author'] = request.user.id
-        context = {'request': self.request}
-        serializer = RecipeCreateSerializer(data=request.data, context=context)
+    def perform_create(self, serializer):
         if serializer.is_valid():
-            serializer.save()
+            serializer.save(author=self.request.user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -48,22 +45,11 @@ class RecipeViewSet(viewsets.ModelViewSet):
         recipe = get_object_or_404(Recipe, pk=pk)
         author = recipe.author
         user = request.user
-        if author == user:
-            return recipe
-        return False
+        return recipe if author == user else False
 
-    def partial_update(self, request, pk=None):
-        recipe = self.is_author(request, pk)
-        if recipe:
-            context = {'request': request}
-            serializer = RecipeCreateSerializer(
-                recipe,
-                data=request.data,
-                context=context,
-                partial=True
-            )
-            if serializer.is_valid():
-                serializer.save()
+    def partial_update(self, serializer):
+        if serializer.is_valid():
+            serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(self.RESPONSE_DETAIL, status=status.HTTP_403_FORBIDDEN)
 

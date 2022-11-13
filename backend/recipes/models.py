@@ -2,7 +2,6 @@ from colorfield.fields import ColorField
 from django.conf import settings
 from django.core.validators import MinValueValidator
 from django.db import models
-
 from users.models import User
 
 
@@ -18,35 +17,12 @@ class Ingredient(models.Model):
     )
 
     def __str__(self):
-        return f'{self.name} ({self.measurement_unit})'
+        return self.name
 
     class Meta:
         unique_together = ('name', 'measurement_unit')
         verbose_name = 'Ингредиент'
         verbose_name_plural = 'Ингредиенты'
-
-
-class IngredientsAmount(models.Model):
-    """Класс количества ингредиентов."""
-    ingredient = models.ForeignKey(
-        Ingredient,
-        on_delete=models.CASCADE,
-        related_name='ingredient',
-        verbose_name='Ингредиент'
-    )
-    amount = models.PositiveSmallIntegerField(
-        verbose_name='Кол-во',
-        validators=(MinValueValidator(settings.MIN_INGREDIENTS_AMOUNT),),
-        unique=False,
-    )
-
-    def __str__(self):
-        return f'{self.ingredient} - {self.amount}'
-
-    class Meta:
-        unique_together = ('ingredient', 'amount')
-        verbose_name = 'Кол-во ингредиентов'
-        verbose_name_plural = 'Кол-во ингредиентов'
 
 
 class Tag(models.Model):
@@ -82,7 +58,7 @@ class Recipe(models.Model):
     )
     text = models.TextField(verbose_name='Текст')
     ingredients = models.ManyToManyField(
-        IngredientsAmount,
+        Ingredient,
         related_name='ingredients',
         verbose_name='Ингредиенты'
     )
@@ -107,6 +83,35 @@ class Recipe(models.Model):
         ordering = ('-created',)
         verbose_name = 'Рецепт'
         verbose_name_plural = 'Рецепты'
+
+
+class IngredientsAmount(models.Model):
+    """Класс количества ингредиентов."""
+    ingredient = models.ForeignKey(
+        Ingredient,
+        on_delete=models.CASCADE,
+        related_name='ingredient',
+        verbose_name='Ингредиент'
+    )
+    recipe = models.ForeignKey(
+        Recipe,
+        on_delete=models.CASCADE,
+        related_name='ingredient_amounts',
+        verbose_name='Рецепт'
+    )
+    amount = models.PositiveSmallIntegerField(
+        verbose_name='Кол-во',
+        validators=(MinValueValidator(settings.MIN_INGREDIENTS_AMOUNT),),
+        unique=False,
+    )
+
+    def __str__(self):
+        return self.ingredient
+
+    class Meta:
+        unique_together = ('ingredient', 'amount')
+        verbose_name = 'Кол-во ингредиентов'
+        verbose_name_plural = 'Кол-во ингредиентов'
 
 
 class Favorite(models.Model):
