@@ -129,7 +129,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
                 return validated_tags
             raise serializers.ValidationError(
                 'Количество тэгов должно быть больше 0'
-                )
+            )
 
     def validate_cooking_time(self, value):
         if value >= settings.MIN_COOKING_TIME:
