@@ -128,7 +128,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
                 validated_tags.append(tags_check[0].id)
                 return validated_tags
             raise serializers.ValidationError(
-                    'Количество тэгов должно быть больше 0'
+                'Количество тэгов должно быть больше 0'
                 )
 
     def validate_cooking_time(self, value):
