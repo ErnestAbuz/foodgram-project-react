@@ -77,43 +77,46 @@ docker-compose down -v
 POST-запрос: /api/users/:
 ```
 {
-
-    "email": "string",
-    "username": "string",
-    "first_name": "string",
-    "last_name": "string",
-    "password": "string"
-
+  "email": "vpupkin@yandex.ru",
+  "username": "vasya.pupkin",
+  "first_name": "Вася",
+  "last_name": "Пупкин",
+  "password": "Qwerty123"
 }
 ```
 Ответ (201):
 ```
 {
-
-    "email": "string",
-    "id": 0,
-    "username": "string",
-    "first_name": "string",
-    "last_name": "string"
-
+  "email": "vpupkin@yandex.ru",
+  "id": 0,
+  "username": "vasya.pupkin",
+  "first_name": "Вася",
+  "last_name": "Пупкин"
 }
 ```
 Ответ (400):
 ```
 {
-    «field_name»: [
-      «Обязательное поле»
-    ]
+  "field_name": [
+    "Обязательное поле."
+  ]
 }
 ```
 2. Получение токена:
 POST-запрос: /api/auth/token/login/
 Запрос:
+```
 {
     «email»: «string»,
     «password»: «string»
 }
+```
 Ответ:
+```
 {
-    «token»: «string»
+  "auth_token": "string"
 }
+```
+
+## Разработчик
+* [ErnestAbuz](https://github.com/ErnestAbuz)
