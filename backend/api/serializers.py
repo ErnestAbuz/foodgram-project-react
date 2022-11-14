@@ -1,7 +1,7 @@
 from django.conf import settings
 from drf_extra_fields.fields import Base64ImageField
-from recipes.models import (Favorite, Ingredient, IngredientRecipe,
-                            IngredientsAmount, Recipe, ShoppingCart, Tag)
+from recipes.models import (Favorite, Ingredient, IngredientsAmount, Recipe,
+                            ShoppingCart, Tag)
 from rest_framework import serializers
 from users.serializers import UserActionGetSerializer
 
@@ -15,6 +15,7 @@ class IngredientSerializer(serializers.ModelSerializer):
 
 class IngredientsAmountSerializer(serializers.ModelSerializer):
     """Класс количества ингредиентов."""
+    id = serializers.ReadOnlyField(source='ingredient.id')
     name = serializers.SerializerMethodField()
     measurement_unit = serializers.SerializerMethodField()
 
@@ -79,7 +80,7 @@ class AddIngredientSerializer(serializers.ModelSerializer):
     id = serializers.PrimaryKeyRelatedField(queryset=Ingredient.objects.all())
 
     class Meta:
-        model = IngredientRecipe
+        model = IngredientsAmount
         fields = ('id', 'amount')
 
 
@@ -88,7 +89,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
     author = serializers.SerializerMethodField()
     tags = TagSerializer(many=True)
     image = Base64ImageField()
-    ingredients = serializers.ListField()
+    ingredients = AddIngredientSerializer(many=True)
 
     class Meta:
         model = Recipe
