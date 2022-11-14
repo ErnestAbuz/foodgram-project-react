@@ -25,8 +25,8 @@ INSTALLED_APPS = [
     'django_filters',
     'djoser',
     'colorfield',
-    'api',
     'recipes',
+    'api',
     'users',
 ]
 
@@ -148,3 +148,4 @@ CORS_URLS_REGEX = r'^/api/.*$'
 
 MIN_COOKING_TIME = 1
 MIN_INGREDIENTS_AMOUNT = 1
+MIN_TAGS_AMOUNT = 1
