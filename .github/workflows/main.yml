@@ -72,7 +72,6 @@ jobs:
             sudo docker-compose exec -T backend python manage.py migrate --noinput
             sudo docker-compose exec -T backend python manage.py createsuperuser --username admin --password admin --noinput --email admin@qwe.qwe
             sudo docker-compose exec -T backend python manage.py collectstatic --no-input
-            sudo docker-compose exec backend python manage.py add_ingredients
   
   send_message:
     runs-on: ubuntu-latest
