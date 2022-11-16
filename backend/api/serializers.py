@@ -75,22 +75,12 @@ class RecipeSerializer(serializers.ModelSerializer):
         return self.favorited_or_in_shopping_cart(value, obj=ShoppingCart)
 
 
-class AddIngredientSerializer(serializers.ModelSerializer):
-    """Вспомогательный сериализатор для RecipeCreateSerializer."""
-
-    id = serializers.PrimaryKeyRelatedField(queryset=Ingredient.objects.all())
-
-    class Meta:
-        model = IngredientsAmount
-        fields = ('id', 'amount')
-
-
 class RecipeCreateSerializer(serializers.ModelSerializer):
     """Класс создания рецептов."""
     author = serializers.SerializerMethodField()
     tags = TagSerializer(many=True)
     image = Base64ImageField()
-    ingredients = AddIngredientSerializer(many=True)
+    ingredients = serializers.ListField()
 
     class Meta:
         model = Recipe
