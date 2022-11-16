@@ -7,7 +7,7 @@ services:
     env_file:
       - ./.env
   backend:
-    image: ernabz/foodgram_backend:v1.0
+    image: ernabz/foodgram_backend:latest
     restart: always
     volumes:
       - static_value:/app/static/
@@ -17,7 +17,7 @@ services:
     env_file:
       - ./.env
   frontend:
-    image: ernabz/foodgram_frontend:v1.0
+    image: ernabz/foodgram_frontend:latest
     volumes:
       - ../frontend/:/app/result_build/
   nginx:
