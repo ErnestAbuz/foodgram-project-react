@@ -143,9 +143,9 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         ) for ingredient in ingredients]
         IngredientsAmount.objects.bulk_create(new_ingredients)
 
-    def add_tags(self, tags):
+    def add_tags(self, tags, recipe):
         for tag in tags:
-            tags.add(tag)
+            recipe.tags.add(tag)
 
     def create(self, validated_data):
         author = self.context.get('request').user
