@@ -2,6 +2,8 @@ import os
 
 from dotenv import find_dotenv, load_dotenv
 
+from .database import *
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 load_dotenv(find_dotenv())
