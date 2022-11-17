@@ -80,7 +80,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
     author = serializers.SerializerMethodField()
     tags = TagSerializer(many=True)
     image = Base64ImageField()
-    ingredients = serializers.ListField(many=True)
+    ingredients = serializers.ListField()
 
     class Meta:
         model = Recipe
