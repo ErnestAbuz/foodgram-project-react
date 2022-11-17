@@ -90,7 +90,6 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
     """Класс создания рецептов."""
     author = serializers.SerializerMethodField()
     tags = TagSerializer(many=True)
-    image = Base64ImageField()
     ingredients = AddIngredientSerializer(many=True)
 
     class Meta:
