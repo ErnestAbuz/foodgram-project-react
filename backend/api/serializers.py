@@ -148,10 +148,10 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
             tags.add(tag)
 
     def create(self, validated_data):
-        author = self.context.get('request').user
         tags = validated_data.pop('tags')
         ingredients = validated_data.pop('ingredients')
-        recipe = Recipe.objects.create(author=author, **validated_data)
+        image = validated_data.pop('image')
+        recipe = Recipe.objects.create(image=image, **validated_data)
         self.add_tags(tags, recipe)
         self.add_ingredients(ingredients, recipe)
         return recipe
