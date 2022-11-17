@@ -9,11 +9,11 @@ class Ingredient(models.Model):
     """Класс ингредиента."""
     name = models.CharField(
         max_length=254,
-        verbose_name='Название',
+        verbose_name='Название'
     )
     measurement_unit = models.CharField(
         max_length=150,
-        verbose_name='Единица измерения',
+        verbose_name='Единица измерения'
     )
 
     def __str__(self):
@@ -54,7 +54,7 @@ class IngredientsAmount(models.Model):
     amount = models.PositiveSmallIntegerField(
         verbose_name='Кол-во',
         validators=(MinValueValidator(settings.MIN_INGREDIENTS_AMOUNT),),
-        unique=False,
+        unique=False
     )
 
     def __str__(self):
@@ -77,7 +77,7 @@ class Recipe(models.Model):
     name = models.CharField(max_length=200, verbose_name='Название')
     image = models.ImageField(
         upload_to='recipes/images/',
-        null=False,
+        null=False
     )
     text = models.TextField(verbose_name='Текст')
     ingredients = models.ManyToManyField(
@@ -88,7 +88,7 @@ class Recipe(models.Model):
     tags = models.ManyToManyField(
         Tag,
         related_name='tags',
-        verbose_name='Тэги',
+        verbose_name='Тэги'
     )
     cooking_time = models.PositiveSmallIntegerField(
         verbose_name='Время готовки',
