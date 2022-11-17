@@ -119,5 +119,10 @@ POST-запрос: /api/auth/token/login/
 }
 ```
 
+## Для входа в админку Django:
+Логин: adminfood
+Пароль: admin123
+Почта: adminfood@ya.ru
+
 ## Разработчик
 * [ErnestAbuz](https://github.com/ErnestAbuz)

@@ -47,7 +47,6 @@ class RecipeSerializer(serializers.ModelSerializer):
     ingredients = IngredientsAmountSerializer(many=True)
     is_favorited = serializers.SerializerMethodField()
     is_in_shopping_cart = serializers.SerializerMethodField()
-    image = Base64ImageField()
 
     class Meta:
         model = Recipe
@@ -90,6 +89,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
     """Класс создания рецептов."""
     author = serializers.SerializerMethodField()
     tags = TagSerializer(many=True)
+    image = Base64ImageField()
     ingredients = AddIngredientSerializer(many=True)
 
     class Meta:
