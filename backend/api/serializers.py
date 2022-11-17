@@ -75,17 +75,27 @@ class RecipeSerializer(serializers.ModelSerializer):
         return self.favorited_or_in_shopping_cart(value, obj=ShoppingCart)
 
 
+class AddIngredientSerializer(serializers.ModelSerializer):
+    """Вспомогательный сериализатор для RecipeCreateSerializer."""
+
+    id = serializers.PrimaryKeyRelatedField(queryset=Ingredient.objects.all())
+
+    class Meta:
+        model = IngredientsAmount
+        fields = ('id', 'amount')
+
+
 class RecipeCreateSerializer(serializers.ModelSerializer):
     """Класс создания рецептов."""
     author = serializers.SerializerMethodField()
     tags = TagSerializer(many=True)
     image = Base64ImageField()
-    ingredients = serializers.ListField()
+    ingredients = AddIngredientSerializer(many=True)
 
     class Meta:
         model = Recipe
-        fields = ('author', 'ingredients', 'tags', 'image', 'name',
-                  'text', 'cooking_time')
+        fields = ('id', 'author', 'ingredients', 'tags', 'image', 'name',
+                  'text', 'cooking_time',)
 
     def validate_ingredients(self, value):
         validated_ingredients = []
