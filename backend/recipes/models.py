@@ -17,7 +17,7 @@ class Ingredient(models.Model):
     )
 
     def __str__(self):
-        return self.name
+        return str(self.name)
 
     class Meta:
         unique_together = ('name', 'measurement_unit')
@@ -36,7 +36,7 @@ class Tag(models.Model):
     slug = models.SlugField(max_length=150, verbose_name='Ссылка', unique=True)
 
     def __str__(self):
-        return self.name
+        return str(self.name)
 
     class Meta:
         verbose_name = 'Тэг'
@@ -49,7 +49,7 @@ class IngredientsAmount(models.Model):
         Ingredient,
         on_delete=models.CASCADE,
         related_name='ingredient',
-        verbose_name='Ингредиент',
+        verbose_name='Ингредиент'
     )
     amount = models.PositiveSmallIntegerField(
         verbose_name='Кол-во',
@@ -83,7 +83,7 @@ class Recipe(models.Model):
     ingredients = models.ManyToManyField(
         IngredientsAmount,
         related_name='ingredients',
-        verbose_name='Ингредиенты',
+        verbose_name='Ингредиенты'
     )
     tags = models.ManyToManyField(
         Tag,
@@ -100,7 +100,7 @@ class Recipe(models.Model):
     )
 
     def __str__(self):
-        return self.name
+        return str(self.name)
 
     class Meta:
         ordering = ('-created',)
