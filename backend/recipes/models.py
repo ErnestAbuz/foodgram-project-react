@@ -17,7 +17,7 @@ class Ingredient(models.Model):
     )
 
     def __str__(self):
-        return self.name
+        return str(self.name)
 
     class Meta:
         unique_together = ('name', 'measurement_unit')
@@ -36,7 +36,7 @@ class Tag(models.Model):
     slug = models.SlugField(max_length=150, verbose_name='Ссылка', unique=True)
 
     def __str__(self):
-        return self.name
+        return str(self.name)
 
     class Meta:
         verbose_name = 'Тэг'
@@ -58,7 +58,7 @@ class IngredientsAmount(models.Model):
     )
 
     def __str__(self):
-        return self.ingredient
+        return str(self.ingredient)
 
     class Meta:
         unique_together = ('ingredient', 'amount')
@@ -100,7 +100,7 @@ class Recipe(models.Model):
     )
 
     def __str__(self):
-        return self.name
+        return str(self.name)
 
     class Meta:
         ordering = ('-created',)
