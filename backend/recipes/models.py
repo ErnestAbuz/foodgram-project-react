@@ -36,7 +36,7 @@ class Tag(models.Model):
     slug = models.SlugField(max_length=150, verbose_name='Ссылка', unique=True)
 
     def __str__(self):
-        return str(self.name)
+        return self.name
 
     class Meta:
         verbose_name = 'Тэг'
@@ -58,7 +58,7 @@ class IngredientsAmount(models.Model):
     )
 
     def __str__(self):
-        return str(self.ingredient)
+        return self.ingredient
 
     class Meta:
         unique_together = ('ingredient', 'amount')
@@ -78,6 +78,7 @@ class Recipe(models.Model):
     image = models.ImageField(
         upload_to='recipes/images/',
         null=False,
+        verbose_name='Картинка',
     )
     text = models.TextField(verbose_name='Текст')
     ingredients = models.ManyToManyField(
@@ -100,7 +101,7 @@ class Recipe(models.Model):
     )
 
     def __str__(self):
-        return str(self.name)
+        return self.name
 
     class Meta:
         ordering = ('-created',)
