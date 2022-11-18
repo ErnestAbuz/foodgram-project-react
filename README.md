@@ -118,11 +118,15 @@ POST-запрос: /api/auth/token/login/
   "auth_token": "string"
 }
 ```
+## Проект находится по адресу:
+```
+http://51.250.64.159
+```
 
 ## Для входа в админку Django:
-Логин: adminfood
-Пароль: admin123
-Почта: adminfood@ya.ru
+- Логин: adminfood
+- Пароль: admin123
+- Почта: adminfood@ya.ru
 
 ## Разработчик
 * [ErnestAbuz](https://github.com/ErnestAbuz)
