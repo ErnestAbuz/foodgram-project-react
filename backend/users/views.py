@@ -45,7 +45,8 @@ class CustomUserViewSet(UserViewSet):
         }
         author = get_object_or_404(User, id=id)
         user = request.user
-        subscription = Subscription.objects.filter(author=author.id, user=user.id)
+        subscription = Subscription.objects.filter(author=author.id,
+                                                   user=user.id)
         is_subscribed = bool(subscription)
         if request.method == 'POST' and author != user and not is_subscribed:
             subscription = Subscription(author=author, user=user)
