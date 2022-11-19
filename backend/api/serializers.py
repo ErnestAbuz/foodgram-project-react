@@ -88,8 +88,11 @@ class AddIngredientSerializer(serializers.ModelSerializer):
 class RecipeCreateSerializer(serializers.ModelSerializer):
     """Класс создания рецептов."""
     author = serializers.SerializerMethodField()
-    tags = TagSerializer(many=True)
-    image = Base64ImageField()
+    tags = serializers.PrimaryKeyRelatedField(
+        queryset=Tag.objects.all(),
+        many=True
+    )
+    image = Base64ImageField(required=True)
     ingredients = AddIngredientSerializer(many=True)
 
     class Meta:
@@ -143,9 +146,9 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         ) for ingredient in ingredients]
         IngredientsAmount.objects.bulk_create(new_ingredients)
 
-    def add_tags(self, tags):
+    def add_tags(self, tags, recipe):
         for tag in tags:
-            tags.add(tag)
+            recipe.tags.add(tag)
 
     def create(self, validated_data):
         author = self.context.get('request').user
