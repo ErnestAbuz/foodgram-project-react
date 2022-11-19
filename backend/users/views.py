@@ -37,15 +37,15 @@ class CustomUserViewSet(UserViewSet):
     @action(methods=['post', 'delete'], detail=False,
             url_path='(?P<pk>[^/.]+)/subscribe',
             permission_classes=[IsAuthenticated])
-    def subscribe(self, request, pk):
+    def subscribe(self, request, id):
         response_errors = {
             'POST': ('Вы уже подписаны на этого автора или '
                      'пытаетеcь подписаться на самого себя'),
             'DELETE': 'Вы не подписаны на этого автора',
         }
-        author = get_object_or_404(User, pk=pk)
+        author = get_object_or_404(User, id=id)
         user = request.user
-        subscription = Subscription.objects.filter(author=author, user=user)
+        subscription = Subscription.objects.filter(author=author.id, user=user.id)
         is_subscribed = bool(subscription)
         if request.method == 'POST' and author != user and not is_subscribed:
             subscription = Subscription(author=author, user=user)
