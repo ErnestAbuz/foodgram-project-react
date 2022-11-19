@@ -1,10 +1,20 @@
+import base64
+
 from django.conf import settings
 from django.shortcuts import get_object_or_404
-from drf_extra_fields.fields import Base64ImageField
 from recipes.models import (Favorite, Ingredient, IngredientsAmount, Recipe,
                             ShoppingCart, Tag)
 from rest_framework import serializers
 from users.serializers import UserActionGetSerializer
+
+
+class Base64ImageField(serializers.ImageField):
+    def to_internal_value(self, data):
+        if isinstance(data, str) and data.startswith('data:image'):
+            format, imgstr = data.split(';base64,')
+            ext = format.split('/')[-1]
+            data = ContentFile(base64.b64decode(imgstr), name='temp.' + ext)
+        return super().to_internal_value(data)
 
 
 class IngredientSerializer(serializers.ModelSerializer):
@@ -47,6 +57,7 @@ class RecipeSerializer(serializers.ModelSerializer):
     ingredients = IngredientsAmountSerializer(many=True)
     is_favorited = serializers.SerializerMethodField()
     is_in_shopping_cart = serializers.SerializerMethodField()
+    image = Base64ImageField(required=True)
 
     class Meta:
         model = Recipe
@@ -146,28 +157,41 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         ) for ingredient in ingredients]
         IngredientsAmount.objects.bulk_create(new_ingredients)
 
-    def add_tags(self, tags):
-        for tag in tags:
-            tag_id = tag.id
-            tag_object = get_object_or_404(Tag, id=tag_id)
-            tags.add(tag_object)
-
     def create(self, validated_data):
-        author = self.context.get('request').user
+        image = validated_data.pop('image')
         tags = validated_data.pop('tags')
         ingredients = validated_data.pop('ingredients')
-        recipe = Recipe.objects.create(author=author, **validated_data)
-        self.add_tags(tags, recipe)
+        recipe = Recipe.objects.create(image=image, **validated_data)
+        recipe.tags.set(tags)
         self.add_ingredients(ingredients, recipe)
         recipe.save()
         return recipe
 
-    def update(self, recipe, validated_data):
-        recipe.tags.clear()
-        IngredientsAmount.objects.filter(recipe=recipe).delete()
-        self.add_tags(validated_data.pop('tags'), recipe)
-        self.add_ingredients(validated_data.pop('ingredients'), recipe)
-        return super().update(recipe, validated_data)
+    def update(self, instance, validated_data):
+        instance.image = validated_data.get('image', instance.image)
+        instance.name = validated_data.get('name', instance.name)
+        instance.text = validated_data.get('text', instance.text)
+        instance.cooking_time = validated_data.get(
+            'cooking_time', instance.cooking_time
+        )
+        tags_data = validated_data.pop('tags')
+        ingredients_data = validated_data.pop('ingredients')
+        instance.tags.clear()
+        instance.ingredients.clear()
+        for tag in tags_data:
+            tag_id = tag.id
+            tag_object = get_object_or_404(Tag, id=tag_id)
+            instance.tags.add(tag_object)
+        for ingredient in ingredients_data:
+            ingredient_id = ingredient.get('id')
+            amount = ingredient.get('amount')
+            ingredient_object = get_object_or_404(Ingredient, id=ingredient_id)
+            instance.ingredients.add(
+                ingredient_object,
+                through_defaults={'amount': amount}
+            )
+        instance.save()
+        return instance
 
     def to_representation(self, instance):
         request = self.context.get('request')
