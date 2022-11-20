@@ -151,6 +151,10 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
             return value
         raise serializers.ValidationError('Время готовки должно быть больше 0')
 
+    def add_tags(self, tags, recipe):
+        for tag in tags:
+            recipe.tags.add(tag)
+
     def add_ingredients(self, ingredients):
         new_ingredients = [IngredientsAmount(
             ingredient=ingredient['id'],
@@ -163,7 +167,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         tags = validated_data.pop('tags')
         ingredients = validated_data.pop('ingredients')
         recipe = Recipe.objects.create(image=image, **validated_data)
-        recipe.tags.set(tags)
+        self.add_tags(tags, recipe)
         self.add_ingredients(ingredients, recipe)
         recipe.save()
         return recipe
