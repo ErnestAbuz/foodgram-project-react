@@ -54,7 +54,7 @@ class TagSerializer(serializers.ModelSerializer):
 class RecipeSerializer(serializers.ModelSerializer):
     """Класс рецептов."""
     author = serializers.SerializerMethodField()
-    tags = TagSerializer(many=True)
+    tags = TagSerializer(many=True, read_only=True)
     ingredients = IngredientsAmountSerializer(many=True)
     is_favorited = serializers.SerializerMethodField()
     is_in_shopping_cart = serializers.SerializerMethodField()
@@ -133,18 +133,14 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         validated_tags = []
         for tags_value in value:
             min_amount = settings.MIN_TAGS_AMOUNT
-            if value > min_amount:
-                tags_id = tags_value['id']
-                name = get_object_or_404(Tag, id=tags_id)
-                tags_check = Tag.objects.get(
-                    name=name,
-                    slug=tags_value['slug']
+            if int(tags_value['id']) < min_amount:
+                raise serializers.ValidationError(
+                    'Количество тэгов должно быть больше 0'
                 )
-                validated_tags.append(tags_check[0].id)
-                return validated_tags
-            raise serializers.ValidationError(
-                'Количество тэгов должно быть больше 0'
-            )
+            tags_id = get_object_or_404(Tag, id=id)
+            tags_check = Tag.objects.get(tag_id=tags_id)
+            validated_tags.append(tags_check[0].id)
+        return validated_tags
 
     def validate_cooking_time(self, value):
         if value >= settings.MIN_COOKING_TIME:
