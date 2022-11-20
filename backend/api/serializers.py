@@ -53,11 +53,12 @@ class TagSerializer(serializers.ModelSerializer):
 
 class RecipeSerializer(serializers.ModelSerializer):
     """Класс рецептов."""
-    author = serializers.SerializerMethodField()
+    author = serializers.SerializerMethodField(read_only=True)
     tags = TagSerializer(many=True, read_only=True)
-    ingredients = IngredientsAmountSerializer(many=True)
-    is_favorited = serializers.SerializerMethodField()
-    is_in_shopping_cart = serializers.SerializerMethodField()
+    ingredients = IngredientsAmountSerializer(source='ingredient',
+                                              many=True, read_only=True)
+    is_favorited = serializers.SerializerMethodField(read_only=True)
+    is_in_shopping_cart = serializers.SerializerMethodField(read_only=True)
     image = Base64ImageField(required=True)
 
     class Meta:
