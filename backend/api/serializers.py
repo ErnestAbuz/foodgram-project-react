@@ -138,9 +138,9 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError(
                     'Количество тэгов должно быть больше 0'
                 )
-            tags_id = tags_value['id']
-            tag = get_object_or_404(Tag, id=tags_id)
-            tags_check = Tag.objects.get(id=tag)
+            tag_id = tags_value['id']
+            tag = get_object_or_404(Tag, id=tag_id)
+            tags_check = Tag.objects.get(tags=tag)
             validated_tags.append(tags_check[0].id)
         return validated_tags
 
