@@ -139,7 +139,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
                 )
             tag_id = tags_value['id']
             tag = get_object_or_404(Tag, id=tag_id)
-            tags_check = Tag.objects.get(tags=tag)
+            tags_check = Tag.objects.get(id=tag)
             validated_tags.append(tags_check[0].id)
         return validated_tags
 
@@ -148,9 +148,9 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
             return value
         raise serializers.ValidationError('Время готовки должно быть больше 0')
 
-    def add_tags(self, tags):
+    def add_tags(self, tags, recipe):
         for tag in tags:
-            tags.add(tag)
+            recipe.tags.add(tag)
 
     def add_ingredients(self, ingredients):
         new_ingredients = [IngredientsAmount(
@@ -164,7 +164,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         tags = validated_data.pop('tags')
         ingredients = validated_data.pop('ingredients')
         recipe = Recipe.objects.create(image=image, **validated_data)
-        self.add_tags(tags, recipe)
+        recipe.tags.set(tags)
         for ingredient in ingredients:
             ingredient_id = ingredient.get('id')
             amount = ingredient.get('amount')
