@@ -160,10 +160,9 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         IngredientsAmount.objects.bulk_create(new_ingredients)
 
     def create(self, validated_data):
-        image = validated_data.pop('image')
         tags = validated_data.pop('tags')
         ingredients = validated_data.pop('ingredients')
-        recipe = Recipe.objects.create(image=image, **validated_data)
+        recipe = Recipe.objects.create(**validated_data)
         self.add_tags(tags, recipe)
         for ingredient in ingredients:
             ingredient_id = ingredient.get('id')
@@ -203,6 +202,8 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         return instance
 
     def to_representation(self, instance):
-        request = self.context.get('request')
-        context = {'request': request}
-        return RecipeSerializer(instance, context=context).data
+        serializer = RecipeSerializer(
+            instance,
+            context=self.context
+        )
+        return serializer.data
