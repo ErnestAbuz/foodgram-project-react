@@ -53,12 +53,12 @@ class TagSerializer(serializers.ModelSerializer):
 
 class RecipeSerializer(serializers.ModelSerializer):
     """Класс рецептов."""
-    author = serializers.SerializerMethodField(read_only=True)
-    tags = TagSerializer(many=True, read_only=True)
+    author = serializers.SerializerMethodField()
+    tags = TagSerializer(many=True)
     ingredients = IngredientsAmountSerializer(source='ingredient',
-                                              many=True, read_only=True)
-    is_favorited = serializers.SerializerMethodField(read_only=True)
-    is_in_shopping_cart = serializers.SerializerMethodField(read_only=True)
+                                              many=True)
+    is_favorited = serializers.SerializerMethodField()
+    is_in_shopping_cart = serializers.SerializerMethodField()
     image = Base64ImageField(required=True)
 
     class Meta:
@@ -149,9 +149,9 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
             return value
         raise serializers.ValidationError('Время готовки должно быть больше 0')
 
-    def add_tags(self, tags, recipe):
+    def add_tags(self, tags):
         for tag in tags:
-            recipe.tags.add(tag)
+            tags.add(tag)
 
     def add_ingredients(self, ingredients):
         new_ingredients = [IngredientsAmount(
