@@ -57,8 +57,7 @@ class RecipeSerializer(serializers.ModelSerializer):
     """Класс рецептов."""
     author = UserActionGetSerializer(read_only=True)
     tags = TagSerializer(many=True, read_only=True)
-    ingredients = IngredientsAmountSerializer(source='ingredient',
-                                              many=True)
+    ingredients = IngredientsAmountSerializer(many=True)
     is_favorited = serializers.SerializerMethodField(read_only=True)
     is_in_shopping_cart = serializers.SerializerMethodField(read_only=True)
     image = Base64ImageField(required=True)
