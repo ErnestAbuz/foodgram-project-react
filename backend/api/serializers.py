@@ -84,11 +84,11 @@ class RecipeSerializer(serializers.ModelSerializer):
 
 class AddIngredientSerializer(serializers.ModelSerializer):
     """Вспомогательный сериализатор для RecipeCreateSerializer."""
-    amount = serializers.IntegerField(write_only=True)
-    id = serializers.IntegerField(write_only=True)
+
+    id = serializers.PrimaryKeyRelatedField(queryset=Ingredient.objects.all())
 
     class Meta:
-        model = Ingredient
+        model = IngredientsAmount
         fields = ('id', 'amount',)
 
 
@@ -164,7 +164,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
                 ingredient=ingredient_id
             ).exists():
                 amount += F('amount')
-            IngredientsAmount.objects.update_or_create(
+            IngredientsAmount.objects.bulk_create(
                 ingredient=ingredient_id,
                 defaults={'amount': amount})
 
