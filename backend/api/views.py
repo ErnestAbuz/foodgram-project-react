@@ -59,8 +59,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         return Response(self.RESPONSE_DETAIL, status=status.HTTP_403_FORBIDDEN)
 
     def destroy(self, request, pk=None):
-        recipe = self.is_author(request, pk)
-        if recipe:
+        if recipe := self.is_author(request, pk):
             recipe.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
         return Response(self.RESPONSE_DETAIL, status=status.HTTP_403_FORBIDDEN)

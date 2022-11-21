@@ -43,6 +43,29 @@ class Tag(models.Model):
         verbose_name_plural = 'Тэги'
 
 
+class IngredientsAmount(models.Model):
+    """Класс количества ингредиентов."""
+    ingredient = models.ForeignKey(
+        Ingredient,
+        on_delete=models.CASCADE,
+        related_name='ingredient',
+        verbose_name='Ингредиент'
+    )
+    amount = models.PositiveSmallIntegerField(
+        verbose_name='Кол-во',
+        validators=(MinValueValidator(settings.MIN_INGREDIENTS_AMOUNT),),
+        unique=False
+    )
+
+    def __str__(self):
+        return str(self.ingredient)
+
+    class Meta:
+        unique_together = ('ingredient', 'amount')
+        verbose_name = 'Кол-во ингредиентов'
+        verbose_name_plural = 'Кол-во ингредиентов'
+
+
 class Recipe(models.Model):
     """Класс рецептов."""
     author = models.ForeignKey(
@@ -59,8 +82,7 @@ class Recipe(models.Model):
     )
     text = models.TextField(verbose_name='Текст')
     ingredients = models.ManyToManyField(
-        Ingredient,
-        through='IngredientsAmount',
+        IngredientsAmount,
         related_name='ingredients',
         verbose_name='Ингредиенты'
     )
@@ -85,35 +107,6 @@ class Recipe(models.Model):
         ordering = ('-created',)
         verbose_name = 'Рецепт'
         verbose_name_plural = 'Рецепты'
-
-
-class IngredientsAmount(models.Model):
-    """Класс количества ингредиентов."""
-    recipe = models.ForeignKey(
-        Recipe,
-        verbose_name='Рецепт',
-        on_delete=models.CASCADE,
-        related_name='ingredient_amount'
-    )
-    ingredient = models.ForeignKey(
-        Ingredient,
-        on_delete=models.CASCADE,
-        related_name='ingredient_amount',
-        verbose_name='Ингредиент'
-    )
-    amount = models.PositiveSmallIntegerField(
-        verbose_name='Кол-во',
-        validators=(MinValueValidator(settings.MIN_INGREDIENTS_AMOUNT),),
-        unique=False
-    )
-
-    def __str__(self):
-        return str(self.ingredient)
-
-    class Meta:
-        unique_together = ('ingredient', 'amount')
-        verbose_name = 'Кол-во ингредиентов'
-        verbose_name_plural = 'Кол-во ингредиентов'
 
 
 class Favorite(models.Model):
