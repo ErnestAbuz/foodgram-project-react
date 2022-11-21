@@ -147,7 +147,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         if value >= settings.MIN_COOKING_TIME:
             return value
         raise serializers.ValidationError('Время готовки должно быть больше 0')
-    
+
     def get_ingredients(self, obj):
         ingredients = IngredientsAmount.objects.filter(ingredient=obj)
         return IngredientsAmountSerializer(ingredients).data
