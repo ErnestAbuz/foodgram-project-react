@@ -28,8 +28,8 @@ class IngredientSerializer(serializers.ModelSerializer):
 class IngredientsAmountSerializer(serializers.ModelSerializer):
     """Класс количества ингредиентов."""
     id = serializers.ReadOnlyField(source='ingredient.id')
-    name = serializers.SerializerMethodField(source='ingredient.name')
-    measurement_unit = serializers.SerializerMethodField(
+    name = serializers.ReadOnlyField(source='ingredient.name')
+    measurement_unit = serializers.ReadOnlyField(
         source='ingredient.measurement_unit'
     )
 
@@ -128,7 +128,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
                 ingredient=ingredient,
                 amount=ingredient_value['amount'],
             )
-            validated_ingredients.append(ingredients_amount[0].id)
+            validated_ingredients.append(ingredients_amount[0])
         return validated_ingredients
 
     def validate_tags(self, value):
@@ -142,7 +142,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
             tag_id = tags_value['id']
             tag = get_object_or_404(Tag, id=tag_id)
             tags_check = Tag.objects.get(id=tag)
-            validated_tags.append(tags_check[0].id)
+            validated_tags.append(tags_check[0])
         return validated_tags
 
     def validate_cooking_time(self, value):
@@ -150,9 +150,9 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
             return value
         raise serializers.ValidationError('Время готовки должно быть больше 0')
 
-    def add_tags(self, tags):
+    def add_tags(self, tags, recipe):
         for tag in tags:
-            tags.add(tag)
+            recipe.tags.add(tag)
 
     def add_ingredients(self, ingredients):
         new_ingredients = [IngredientsAmount(
@@ -165,8 +165,8 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         tags = validated_data.pop('tags')
         ingredients = validated_data.pop('ingredients')
         recipe = Recipe.objects.create(**validated_data)
-        self.add_tags(tags)
-        self.add_ingredients(ingredients)
+        self.add_tags(tags, recipe)
+        self.add_ingredients(ingredients, recipe)
         recipe.save()
         return recipe
 
