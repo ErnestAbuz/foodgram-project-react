@@ -57,7 +57,7 @@ class RecipeSerializer(serializers.ModelSerializer):
     """Класс рецептов."""
     author = UserActionGetSerializer(read_only=True)
     tags = TagSerializer(many=True, read_only=True)
-    ingredients = serializers.SerializerMethodField()
+    ingredients = IngredientsAmountSerializer(many=True)
     is_favorited = serializers.SerializerMethodField(read_only=True)
     is_in_shopping_cart = serializers.SerializerMethodField(read_only=True)
     image = Base64ImageField(required=True)
@@ -70,7 +70,7 @@ class RecipeSerializer(serializers.ModelSerializer):
 
     def get_ingredients(self):
         """Получает ингредиенты из модели IngredientAmount."""
-        ingredients = IngredientsAmount.objects.filter(id=self)
+        ingredients = IngredientsAmount.objects.filter(recipe=self)
         return IngredientsAmountSerializer(ingredients, many=True).data
 
     def get_author(self, value):
@@ -172,7 +172,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         ingredients = validated_data.pop('ingredients')
         recipe = Recipe.objects.create(author=author, **validated_data)
         self.tags.set(tags)
-        self.add_ingredients(ingredients, recipe)
+        self.add_ingredients(ingredients)
         return recipe
 
     def update(self, recipe, validated_data):
