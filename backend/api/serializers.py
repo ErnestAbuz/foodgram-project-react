@@ -160,7 +160,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         ingredients = validated_data.pop('ingredients')
         recipe = Recipe.objects.create(author=author, **validated_data)
         self.tags.set(tags)
-        self.add_ingredients(ingredients, recipe)
+        self.add_ingredients(ingredients)
         return recipe
 
     def update(self, recipe, validated_data):
