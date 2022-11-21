@@ -3,6 +3,7 @@ import base64
 from django.conf import settings
 from django.core.files.base import ContentFile
 from django.shortcuts import get_object_or_404
+from django.db.models import F
 from recipes.models import (Favorite, Ingredient, IngredientsAmount, Recipe,
                             ShoppingCart, Tag)
 from rest_framework import serializers
@@ -146,19 +147,26 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         if value >= settings.MIN_COOKING_TIME:
             return value
         raise serializers.ValidationError('Время готовки должно быть больше 0')
+    
+    def get_ingredients(self, obj):
+        ingredients = IngredientsAmount.objects.filter(ingredient=obj)
+        return IngredientsAmountSerializer(ingredients).data
 
     def add_tags(self, tags):
         for tag in tags:
             tags.add(tag)
 
     def add_ingredients(self, ingredients):
-        IngredientsAmount.objects.bulk_create([
-            IngredientsAmount(
-                ingredient=ingredient.get('id'),
-                amount=ingredient.get('amount')
-            )
-            for ingredient in ingredients
-        ])
+        for ingredient in ingredients:
+            ingredient_id = ingredient['id']
+            amount = ingredient['amount']
+            if IngredientsAmount.objects.filter(
+                ingredient=ingredient_id
+            ).exists():
+                amount += F('amount')
+            IngredientsAmount.objects.update_or_create(
+                ingredient=ingredient_id,
+                defaults={'amount': amount})
 
     def create(self, validated_data):
         author = self.context.get('request').user
@@ -166,7 +174,13 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         ingredients = validated_data.pop('ingredients')
         recipe = Recipe.objects.create(author=author, **validated_data)
         self.tags.set(tags)
-        self.add_ingredients(ingredients)
+        for ingredient in ingredients:
+            id = ingredient.get('id')
+            amount = ingredient.get('amount')
+            ingredient_id = get_object_or_404(Ingredient, id=id)
+            IngredientsAmount.objects.create(
+                ingredient=ingredient_id, amount=amount
+            )
         recipe.save()
         return recipe
 
