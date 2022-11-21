@@ -70,7 +70,7 @@ class RecipeSerializer(serializers.ModelSerializer):
 
     def get_ingredients(self):
         """Получает ингредиенты из модели IngredientAmount."""
-        ingredients = IngredientsAmount.objects.filter(recipe=self)
+        ingredients = IngredientsAmount.objects.filter(ingredients=self)
         return IngredientsAmountSerializer(ingredients, many=True).data
 
     def get_author(self, value):
@@ -106,7 +106,7 @@ class AddIngredientSerializer(serializers.ModelSerializer):
 
 class RecipeCreateSerializer(serializers.ModelSerializer):
     """Класс создания рецептов."""
-    author = serializers.SerializerMethodField()
+    author = UserActionGetSerializer(read_only=True)
     tags = serializers.PrimaryKeyRelatedField(
         queryset=Tag.objects.all(),
         many=True
