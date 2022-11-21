@@ -49,7 +49,8 @@ class RecipeSerializer(serializers.ModelSerializer):
     """Класс рецептов."""
     author = UserActionGetSerializer(read_only=True)
     tags = TagSerializer(many=True, read_only=True)
-    ingredients = IngredientsAmountSerializer(many=True)
+    ingredients = IngredientsAmountSerializer(source='ingredient',
+                                              many=True)
     is_favorited = serializers.SerializerMethodField(read_only=True)
     is_in_shopping_cart = serializers.SerializerMethodField(read_only=True)
     image = Base64ImageField(required=True)
@@ -159,7 +160,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         ingredients = validated_data.pop('ingredients')
         recipe = Recipe.objects.create(author=author, **validated_data)
         self.tags.set(tags)
-        self.add_ingredients(ingredients)
+        self.add_ingredients(ingredients, recipe)
         return recipe
 
     def update(self, recipe, validated_data):
