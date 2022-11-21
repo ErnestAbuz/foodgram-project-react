@@ -150,9 +150,9 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
             return value
         raise serializers.ValidationError('Время готовки должно быть больше 0')
 
-    def add_tags(self, tags, recipe):
+    def add_tags(self, tags):
         for tag in tags:
-            recipe.tags.add(tag)
+            tags.add(tag)
 
     def add_ingredients(self, ingredients):
         new_ingredients = [IngredientsAmount(
