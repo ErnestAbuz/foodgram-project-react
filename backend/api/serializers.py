@@ -55,11 +55,11 @@ class TagSerializer(serializers.ModelSerializer):
 
 class RecipeSerializer(serializers.ModelSerializer):
     """Класс рецептов."""
-    author = serializers.SerializerMethodField()
-    tags = TagSerializer(many=True)
-    ingredients = IngredientsAmountSerializer(many=True)
-    is_favorited = serializers.SerializerMethodField()
-    is_in_shopping_cart = serializers.SerializerMethodField()
+    author = UserActionGetSerializer(read_only=True)
+    tags = TagSerializer(many=True, read_only=True)
+    ingredients = serializers.SerializerMethodField()
+    is_favorited = serializers.SerializerMethodField(read_only=True)
+    is_in_shopping_cart = serializers.SerializerMethodField(read_only=True)
     image = Base64ImageField(required=True)
 
     class Meta:
@@ -142,7 +142,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
             tag_id = tags_value['id']
             tag = get_object_or_404(Tag, id=tag_id)
             tags_check = Tag.objects.get(id=tag)
-            validated_tags.append(tags_check[0])
+            validated_tags.append(tags_check[0].id)
         return validated_tags
 
     def validate_cooking_time(self, value):
@@ -150,9 +150,9 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
             return value
         raise serializers.ValidationError('Время готовки должно быть больше 0')
 
-    def add_tags(self, tags, recipe):
+    def add_tags(self, tags):
         for tag in tags:
-            recipe.tags.add(tag)
+            tags.add(tag)
 
     def add_ingredients(self, ingredients):
         new_ingredients = [IngredientsAmount(
@@ -162,12 +162,12 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         IngredientsAmount.objects.bulk_create(new_ingredients)
 
     def create(self, validated_data):
+        author = self.context.get('request').user
         tags = validated_data.pop('tags')
         ingredients = validated_data.pop('ingredients')
-        recipe = Recipe.objects.create(**validated_data)
-        self.add_tags(tags, recipe)
+        recipe = Recipe.objects.create(author=author, **validated_data)
+        self.tags.set(tags)
         self.add_ingredients(ingredients, recipe)
-        recipe.save()
         return recipe
 
     def update(self, recipe, validated_data):

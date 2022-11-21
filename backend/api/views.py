@@ -34,9 +34,13 @@ class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
     serializer_class = RecipeSerializer
     filterset_class = RecipeFilterSet
+    
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return RecipeSerializer
+        return RecipeCreateSerializer
 
     def perform_create(self, serializer):
-        serializer = RecipeCreateSerializer()
         if serializer.is_valid():
             serializer.save(author=self.request.user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -49,7 +53,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
         return recipe if author == user else False
 
     def partial_update(self, serializer):
-        serializer = RecipeCreateSerializer()
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
