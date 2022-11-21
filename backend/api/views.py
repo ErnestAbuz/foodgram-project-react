@@ -1,6 +1,6 @@
 from api.filters import IngredientSearchFilterSet, RecipeFilterSet
 from api.serializers import (IngredientSerializer, RecipeSerializer,
-                             TagSerializer)
+                             RecipeCreateSerializer, TagSerializer)
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from recipes.models import Favorite, Ingredient, Recipe, ShoppingCart, Tag
@@ -36,6 +36,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     filterset_class = RecipeFilterSet
 
     def perform_create(self, serializer):
+        serializer = RecipeCreateSerializer()
         if serializer.is_valid():
             serializer.save(author=self.request.user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -48,6 +49,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         return recipe if author == user else False
 
     def partial_update(self, serializer):
+        serializer = RecipeCreateSerializer()
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
