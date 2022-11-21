@@ -37,14 +37,6 @@ class IngredientsAmountSerializer(serializers.ModelSerializer):
         model = IngredientsAmount
         fields = ('id', 'name', 'measurement_unit', 'amount')
 
-    def get_name(self, value):
-        name = value.ingredient.name
-        return name
-
-    def get_measurement_unit(self, value):
-        measurement_unit = value.ingredient.measurement_unit
-        return measurement_unit
-
 
 class TagSerializer(serializers.ModelSerializer):
     """Класс тэгов."""
