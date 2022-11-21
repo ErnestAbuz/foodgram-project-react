@@ -34,7 +34,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
     serializer_class = RecipeSerializer
     filterset_class = RecipeFilterSet
-    
+
     def get_serializer_class(self):
         if self.request.method == 'GET':
             return RecipeSerializer
