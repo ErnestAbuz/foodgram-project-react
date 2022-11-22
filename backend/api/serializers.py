@@ -61,9 +61,12 @@ class RecipeSerializer(serializers.ModelSerializer):
                   'is_in_shopping_cart', 'name', 'image', 'text',
                   'cooking_time',)
 
-    def get_ingredients(self, id):
-        ingredients = IngredientsAmount.objects.filter(id=id)
-        return IngredientsAmountSerializer(ingredients).data
+    def get_ingredients(self, value):
+        request = self.context['request']
+        ingredients = value.ingredients
+        context = {'request': request}
+        serializer = IngredientsAmountSerializer(ingredients, context=context)
+        return serializer.data
 
     def get_author(self, value):
         request = self.context['request']
@@ -138,7 +141,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         recipe = Recipe.objects.create(**validated_data)
         self.add_tags(tags, recipe)
         for ingredient in ingredients:
-            ingredient_id = ingredient.get('id')
+            ingredient_id= ingredient.get('id')
             amount = ingredient.get('amount')
             IngredientsAmount.objects.create(
                 ingredient=ingredient_id, amount=amount
