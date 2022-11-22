@@ -85,7 +85,8 @@ class RecipeSerializer(serializers.ModelSerializer):
 class AddIngredientSerializer(serializers.ModelSerializer):
     """Вспомогательный сериализатор для RecipeCreateSerializer."""
 
-    id = serializers.PrimaryKeyRelatedField(queryset=Ingredient.objects.all())
+    id = serializers.IntegerField(write_only=True)
+    amount = serializers.IntegerField(write_only=True)
 
     class Meta:
         model = IngredientsAmount
@@ -115,13 +116,12 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
             )
         validated_ingredients = []
         for ingredient_value in value:
-            min_amount = settings.MIN_INGREDIENTS_AMOUNT
-            if int(ingredient_value['amount']) < min_amount:
+            if int(ingredient_value['amount']) < settings.MIN_INGR_AMOUNT:
                 raise serializers.ValidationError(
                     'Количество ингредиентов должно быть больше 0'
                 )
-            ingredient_id = ingredient_value['id']
-            ingredient = get_object_or_404(Ingredient, id=ingredient_id)
+            ingredient = get_object_or_404(Ingredient,
+                                           id=ingredient_value['id'])
             ingredients_amount = IngredientsAmount.objects.get(
                 ingredient=ingredient,
                 amount=ingredient_value['amount'],
@@ -132,13 +132,11 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
     def validate_tags(self, value):
         validated_tags = []
         for tags_value in value:
-            min_amount = settings.MIN_TAGS_AMOUNT
-            if int(tags_value['id']) < min_amount:
+            if int(tags_value['id']) < settings.MIN_TAGS_AMOUNT:
                 raise serializers.ValidationError(
                     'Количество тэгов должно быть больше 0'
                 )
-            tag_id = tags_value['id']
-            tag = get_object_or_404(Tag, id=tag_id)
+            tag = get_object_or_404(Tag, id=tags_value['id'])
             tags_check = Tag.objects.get(id=tag)
             validated_tags.append(tags_check[0].id)
         return validated_tags
