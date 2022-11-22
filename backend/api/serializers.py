@@ -105,7 +105,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         model = Recipe
         fields = ('id', 'author', 'ingredients', 'tags', 'image', 'name',
                   'text', 'cooking_time',)
-    
+
     def validate_ingredients(self, value):
         ingredients = value
         if ingredients < settings.MIN_INGREDIENTS_AMOUNT:
