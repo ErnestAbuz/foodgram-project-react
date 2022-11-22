@@ -17,7 +17,7 @@ class Ingredient(models.Model):
     )
 
     def __str__(self):
-        return str(self.name)
+        return self.name
 
     class Meta:
         unique_together = ('name', 'measurement_unit')
@@ -58,7 +58,7 @@ class IngredientsAmount(models.Model):
     )
 
     def __str__(self):
-        return self.ingredient
+        return f'{self.ingredient}'
 
     class Meta:
         unique_together = ('ingredient', 'amount')
@@ -101,7 +101,7 @@ class Recipe(models.Model):
     )
 
     def __str__(self):
-        return f'{self.name}'
+        return self.name
 
     class Meta:
         ordering = ('-created',)
