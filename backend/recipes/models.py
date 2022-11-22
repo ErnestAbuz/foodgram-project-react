@@ -58,7 +58,7 @@ class IngredientsAmount(models.Model):
     )
 
     def __str__(self):
-        return str(self.ingredient)
+        return f'{self.ingredient}'
 
     class Meta:
         unique_together = ('ingredient', 'amount')

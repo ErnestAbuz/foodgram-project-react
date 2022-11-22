@@ -28,14 +28,14 @@ class IngredientSerializer(serializers.ModelSerializer):
 
 class IngredientsAmountSerializer(serializers.ModelSerializer):
     """Класс количества ингредиентов."""
-    id = serializers.IntegerField(source='ingredient.id')
-    name = serializers.CharField(source='ingredient.name')
-    measurement_unit = serializers.CharField(
+    id = serializers.ReadOnlyField(source='ingredient.id')
+    name = serializers.ReadOnlyField(source='ingredient.name')
+    measurement_unit = serializers.ReadOnlyField(
         source='ingredient.measurement_unit'
     )
 
     class Meta:
-        model = Ingredient
+        model = IngredientsAmount
         fields = ('id', 'name', 'measurement_unit', 'amount',)
 
 
