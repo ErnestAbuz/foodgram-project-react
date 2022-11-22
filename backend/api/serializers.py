@@ -50,7 +50,7 @@ class RecipeSerializer(serializers.ModelSerializer):
     """Класс рецептов."""
     author = serializers.SerializerMethodField()
     tags = TagSerializer(many=True, read_only=True)
-    ingredients = IngredientsAmountSerializer(many=True)
+    ingredients = IngredientsAmountSerializer(many=True, read_only=True)
     is_favorited = serializers.SerializerMethodField(read_only=True)
     is_in_shopping_cart = serializers.SerializerMethodField(read_only=True)
     image = Base64ImageField(required=True)
@@ -117,16 +117,11 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
             recipe.tags.add(tag)
 
     def add_ingredients(self, ingredients):
-        for ingredient in ingredients:
-            ingredient_id = ingredient['id']
-            amount = ingredient['amount']
-            if IngredientsAmount.objects.filter(
-                ingredient=ingredient_id
-            ).exists():
-                amount += F('amount')
-            IngredientsAmount.objects.update_or_create(
-                ingredient=ingredient_id,
-                defaults={'amount': amount})
+        new_ingredients = [IngredientsAmount(
+            ingredient=ingredient['id'],
+            amount=ingredient['amount'],
+        ) for ingredient in ingredients]
+        IngredientsAmount.objects.bulk_create(new_ingredients)
 
     def create(self, validated_data):
         tags = validated_data.pop('tags')
