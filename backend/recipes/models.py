@@ -17,7 +17,7 @@ class Ingredient(models.Model):
     )
 
     def __str__(self):
-        return self.name
+        return str(self.name)
 
     class Meta:
         unique_together = ('name', 'measurement_unit')
