@@ -116,12 +116,13 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
             )
         validated_ingredients = []
         for ingredient_value in value:
-            if int(ingredient_value['amount']) < settings.MIN_INGR_AMOUNT:
+            min_amount = settings.MIN_INGREDIENTS_AMOUNT
+            if int(ingredient_value['amount']) < min_amount:
                 raise serializers.ValidationError(
                     'Количество ингредиентов должно быть больше 0'
                 )
-            ingredient = get_object_or_404(Ingredient,
-                                           id=ingredient_value['id'])
+            ingredient_id = ingredient_value['id']
+            ingredient = get_object_or_404(Ingredient, id=ingredient_id)
             ingredients_amount = IngredientsAmount.objects.get(
                 ingredient=ingredient,
                 amount=ingredient_value['amount'],
@@ -132,11 +133,13 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
     def validate_tags(self, value):
         validated_tags = []
         for tags_value in value:
-            if int(tags_value['id']) < settings.MIN_TAGS_AMOUNT:
+            min_amount = settings.MIN_TAGS_AMOUNT
+            if int(tags_value['id']) < min_amount:
                 raise serializers.ValidationError(
                     'Количество тэгов должно быть больше 0'
                 )
-            tag = get_object_or_404(Tag, id=tags_value['id'])
+            tag_id = tags_value['id']
+            tag = get_object_or_404(Tag, id=tag_id)
             tags_check = Tag.objects.get(id=tag)
             validated_tags.append(tags_check[0].id)
         return validated_tags
