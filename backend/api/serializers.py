@@ -95,12 +95,16 @@ class AddIngredientSerializer(serializers.ModelSerializer):
 class RecipeCreateSerializer(serializers.ModelSerializer):
     """Класс создания рецептов."""
     author = serializers.SerializerMethodField()
+    tags = serializers.PrimaryKeyRelatedField(
+        queryset=Tag.objects.all(),
+        many=True
+    )
     image = Base64ImageField(required=True)
     ingredients = AddIngredientSerializer(many=True)
 
     class Meta:
         model = Recipe
-        fields = ('author', 'ingredients', 'tags', 'image', 'name',
+        fields = ('id', 'author', 'ingredients', 'tags', 'image', 'name',
                   'text', 'cooking_time',)
 
     def validate_cooking_time(self, value):
@@ -129,10 +133,10 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
                 defaults={'amount': amount})
 
     def create(self, validated_data):
-        tags = validated_data.pop('tags')
+        tags_data = validated_data.pop('tags')
         ingredients = validated_data.pop('ingredients')
         recipe = Recipe.objects.create(**validated_data)
-        self.tags.set(tags)
+        self.tags.set(tags_data)
         for ingredient in ingredients:
             id = ingredient.get('id')
             amount = ingredient.get('amount')
