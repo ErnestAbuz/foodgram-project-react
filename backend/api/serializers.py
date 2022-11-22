@@ -1,5 +1,5 @@
 import base64
-
+from django.core.exceptions import ObjectDoesNotExist
 from django.conf import settings
 from django.core.files.base import ContentFile
 from django.shortcuts import get_object_or_404
@@ -85,9 +85,7 @@ class RecipeSerializer(serializers.ModelSerializer):
 class AddIngredientSerializer(serializers.ModelSerializer):
     """Вспомогательный сериализатор для RecipeCreateSerializer."""
 
-    id = serializers.PrimaryKeyRelatedField(
-        queryset=Ingredient.objects.get('id')
-    )
+    id = serializers.PrimaryKeyRelatedField(queryset=Ingredient.objects.all())
 
     class Meta:
         model = IngredientsAmount
@@ -124,10 +122,14 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
                 )
             ingredient_id = ingredient_value['id']
             ingredient = get_object_or_404(Ingredient, id=ingredient_id)
-            ingredients_amount = IngredientsAmount.objects.get(
-                ingredient=ingredient,
-                amount=ingredient_value['amount'],
-            )
+            try:
+                ingredients_amount = IngredientsAmount.objects.get(
+                    ingredient=ingredient,
+                    amount=ingredient_value['amount'],
+                )
+            except ObjectDoesNotExist:
+                ingredient = None
+                amount = None
             validated_ingredients.append(ingredients_amount[0].id)
         return validated_ingredients
 
