@@ -108,7 +108,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
 
     def validate_ingredients(self, value):
         ingredients = value
-        if ingredients < settings.MIN_INGREDIENTS_AMOUNT:
+        if not ingredients:
             raise serializers.ValidationError(
                 'Количество ингредиентов должно быть больше 0'
             )
