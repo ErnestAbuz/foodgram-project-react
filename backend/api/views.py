@@ -41,10 +41,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         return RecipeCreateSerializer
 
     def perform_create(self, serializer):
-        if serializer.is_valid():
-            serializer.save(author=self.request.user)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        serializer.save(author=self.request.user)
 
     def is_author(self, request, pk):
         recipe = get_object_or_404(Recipe, pk=pk)
@@ -53,10 +50,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         return recipe if author == user else False
 
     def perform_update(self, serializer):
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response(self.RESPONSE_DETAIL, status=status.HTTP_403_FORBIDDEN)
+        serializer.save()
 
     def destroy(self, request, pk=None):
         recipe = self.is_author(request, pk)
