@@ -61,8 +61,8 @@ class RecipeSerializer(serializers.ModelSerializer):
                   'is_in_shopping_cart', 'name', 'image', 'text',
                   'cooking_time',)
 
-    def get_ingredients(self, obj):
-        ingredients = IngredientsAmount.objects.filter(id=obj)
+    def get_ingredients(self, id):
+        ingredients = IngredientsAmount.objects.filter(id=id)
         return IngredientsAmountSerializer(ingredients).data
 
     def get_author(self, value):
