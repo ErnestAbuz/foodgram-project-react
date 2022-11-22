@@ -107,16 +107,12 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
                   'text', 'cooking_time',)
 
     def validate_tags(self, value):
-        validated_tags = []
         for tags_value in value:
             if int(tags_value['id']) < settings.MIN_TAGS_AMOUNT:
                 raise serializers.ValidationError(
                     'Количество тэгов должно быть больше 0'
                 )
-            tag = get_object_or_404(Tag, id=tags_value.get('id'))
-            tags_check = Tag.objects.get(id=tag)
-            validated_tags.append(tags_check[0].id)
-        return validated_tags
+        return value
 
     def validate_cooking_time(self, value):
         if value >= settings.MIN_COOKING_TIME:
