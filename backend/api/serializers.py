@@ -2,7 +2,7 @@ import base64
 
 from django.conf import settings
 from django.core.files.base import ContentFile
-
+from django.shortcuts import get_object_or_404
 from recipes.models import (Favorite, Ingredient, IngredientsAmount, Recipe,
                             ShoppingCart, Tag)
 from rest_framework import serializers
@@ -105,6 +105,18 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         model = Recipe
         fields = ('id', 'author', 'ingredients', 'tags', 'image', 'name',
                   'text', 'cooking_time',)
+
+    def validate_tags(self, value):
+        validated_tags = []
+        for tags_value in value:
+            if int(tags_value['id']) < settings.MIN_TAGS_AMOUNT:
+                raise serializers.ValidationError(
+                    'Количество тэгов должно быть больше 0'
+                )
+            tag = get_object_or_404(Tag, id=tags_value['id'])
+            tags_check = Tag.objects.get(id=tag)
+            validated_tags.append(tags_check[0].id)
+        return validated_tags
 
     def validate_cooking_time(self, value):
         if value >= settings.MIN_COOKING_TIME:
