@@ -1,5 +1,5 @@
 import base64
-from django.core.exceptions import ObjectDoesNotExist
+
 from django.conf import settings
 from django.core.files.base import ContentFile
 from django.shortcuts import get_object_or_404
@@ -106,31 +106,6 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         model = Recipe
         fields = ('author', 'ingredients', 'tags', 'image', 'name',
                   'text', 'cooking_time',)
-
-    def validate_ingredients(self, value):
-        ingredients_id = [ingredient['id'] for ingredient in value]
-        if len(ingredients_id) != len(set(ingredients_id)):
-            raise serializers.ValidationError(
-                'Ингредиенты не должны дублироваться'
-            )
-        validated_ingredients = []
-        for ingredient_value in value:
-            min_amount = settings.MIN_INGREDIENTS_AMOUNT
-            if int(ingredient_value['amount']) < min_amount:
-                raise serializers.ValidationError(
-                    'Количество ингредиентов должно быть больше 0'
-                )
-            ingredient_id = ingredient_value['id']
-            try:
-                ingredient = get_object_or_404(Ingredient, id=ingredient_id)
-                ingredients_amount = IngredientsAmount.objects.get(
-                    ingredient=ingredient,
-                    amount=ingredient_value['amount'],
-                )
-            except ObjectDoesNotExist:
-                ingredient = None
-            validated_ingredients.append(ingredients_amount[0].id)
-        return validated_ingredients
 
     def validate_tags(self, value):
         validated_tags = []
