@@ -151,7 +151,6 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         instance.ingredients.clear()
         self.add_tags(validated_data.pop('tags'), recipe)
         ingredients = validated_data.get('ingredients')
-        IngredientsAmount.objects.filter(recipe=recipe).delete()
         ingredients_list = []
         for ingredient in ingredients:
             ingredient_id = ingredient.get('id')
