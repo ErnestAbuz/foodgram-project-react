@@ -121,15 +121,14 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
                     'Количество ингредиентов должно быть больше 0'
                 )
             ingredient_id = ingredient_value['id']
-            ingredient = get_object_or_404(Ingredient, id=ingredient_id)
             try:
+                ingredient = get_object_or_404(Ingredient, id=ingredient_id)
                 ingredients_amount = IngredientsAmount.objects.get(
                     ingredient=ingredient,
                     amount=ingredient_value['amount'],
                 )
             except ObjectDoesNotExist:
                 ingredient = None
-                amount = None
             validated_ingredients.append(ingredients_amount[0].id)
         return validated_ingredients
 
