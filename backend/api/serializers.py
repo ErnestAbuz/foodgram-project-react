@@ -124,7 +124,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
                 ingredient=ingredient_id
             ).exists():
                 amount += F('amount')
-            IngredientsAmount.objects.bulk_create(
+            IngredientsAmount.objects.update_or_create(
                 ingredient=ingredient_id,
                 defaults={'amount': amount})
 
