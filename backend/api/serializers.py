@@ -62,7 +62,7 @@ class RecipeSerializer(serializers.ModelSerializer):
                   'cooking_time',)
 
     def get_ingredients(self, obj):
-        ingredients = IngredientsAmount.objects.filter(recipe=obj)
+        ingredients = IngredientsAmount.objects.filter(id=obj)
         return IngredientsAmountSerializer(ingredients).data
 
     def get_author(self, value):
