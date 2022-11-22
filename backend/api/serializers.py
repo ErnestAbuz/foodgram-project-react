@@ -110,7 +110,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         validated_tags = []
         for tags_value in value:
             min_amount = settings.MIN_TAGS_AMOUNT
-            if int(tags_value['id']) < min_amount:
+            if int(tags_value) < min_amount:
                 raise serializers.ValidationError(
                     'Количество тэгов должно быть больше 0'
                 )
