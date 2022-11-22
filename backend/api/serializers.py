@@ -116,7 +116,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
             )
         validated_ingredients = []
         for ingredient_value in value:
-            if int(ingredient_value['amount']) < settings.MIN_INGREDIENTS_AMOUNT:
+            if int(ingredient_value['amount']) < settings.MIN_INGR_AMOUNT:
                 raise serializers.ValidationError(
                     'Количество ингредиентов должно быть больше 0'
                 )
