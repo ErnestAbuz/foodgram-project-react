@@ -101,7 +101,7 @@ class Recipe(models.Model):
     )
 
     def __str__(self):
-        return self.name
+        return f'{self.name}'
 
     class Meta:
         ordering = ('-created',)
