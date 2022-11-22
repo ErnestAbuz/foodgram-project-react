@@ -64,8 +64,8 @@ class RecipeSerializer(serializers.ModelSerializer):
     def get_ingredients(self, value, object):
         """Получает ингредиенты из модели IngredientAmount."""
         user = self.context['request'].user
-        ingredients = IngredientsAmount.objects.filter(recipe=value, user=user)
-        return IngredientsAmountSerializer(ingredients, many=True).data
+        object = IngredientsAmount.objects.filter(recipe=value, user=user)
+        return IngredientsAmountSerializer(object, many=True).data
 
     def get_author(self, value):
         request = self.context['request']
