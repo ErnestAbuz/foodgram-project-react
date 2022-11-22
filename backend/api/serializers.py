@@ -3,7 +3,7 @@ import base64
 from django.conf import settings
 from django.core.files.base import ContentFile
 from django.shortcuts import get_object_or_404
-from django.db.models import F
+
 from recipes.models import (Favorite, Ingredient, IngredientsAmount, Recipe,
                             ShoppingCart, Tag)
 from rest_framework import serializers
