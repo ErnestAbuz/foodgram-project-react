@@ -106,25 +106,6 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         fields = ('id', 'author', 'ingredients', 'tags', 'image', 'name',
                   'text', 'cooking_time',)
 
-    def validate_ingredients(self, value):
-        ingredients = value
-        if not ingredients:
-            raise serializers.ValidationError(
-                'Количество ингредиентов должно быть больше 0'
-            )
-        ingredient_list = []
-        for ingredient_item in ingredients:
-            ingredient_obj = get_object_or_404(
-                IngredientsAmount,
-                ingredient=ingredient_item['id']
-            )
-            if ingredient_obj in ingredient_list:
-                raise serializers.ValidationError(
-                    'Этот ингредиент уже добавлен'
-                )
-            ingredient_list.append(ingredient_obj)
-        return value
-
     def validate_tags(self, value):
         tags = value
         if not tags:
