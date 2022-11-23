@@ -115,7 +115,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         ingredient_list = []
         for ingredient_item in ingredients:
             ingredient_obj = get_object_or_404(Ingredient,
-                                           ingredient=ingredient_item['id'])
+                                               ingredient=ingredient_item['id'])
             if ingredient_obj in ingredient_list:
                 raise serializers.ValidationError(
                     'Этот ингредиент уже добавлен'
