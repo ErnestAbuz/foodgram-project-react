@@ -2,7 +2,7 @@ import base64
 
 from django.conf import settings
 from django.core.files.base import ContentFile
-
+from django.shortcuts import get_object_or_404
 from recipes.models import (Favorite, Ingredient, IngredientsAmount, Recipe,
                             ShoppingCart, Tag)
 from rest_framework import serializers
@@ -105,6 +105,23 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         model = Recipe
         fields = ('id', 'author', 'ingredients', 'tags', 'image', 'name',
                   'text', 'cooking_time',)
+
+    def validate_ingredients(self, value):
+        ingredients = value
+        if not ingredients:
+            raise serializers.ValidationError(
+                'Количество ингредиентов должно быть больше 0'
+            )
+        ingredient_list = []
+        for ingredient_item in ingredients:
+            ingredient = get_object_or_404(Ingredient,
+                                           name=ingredient_item['id'])
+            if ingredient in ingredient_list:
+                raise serializers.ValidationError(
+                    'Этот ингредиент уже добавлен'
+                )
+            ingredient_list.append(ingredient)
+        return value
 
     def validate_tags(self, value):
         tags = value
