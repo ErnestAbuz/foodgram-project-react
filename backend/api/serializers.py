@@ -63,7 +63,7 @@ class RecipeSerializer(serializers.ModelSerializer):
     def get_ingredients(self, obj):
         ingredients = obj.ingredients.values(
             'id',
-            'name',
+            'ingredient',
             'measurement_unit',
             'amount'
         )
