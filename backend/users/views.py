@@ -6,14 +6,13 @@ from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from users.models import Subscription, User
-from users.serializers import (CustomUserSerializer, SubscriptionSerializer,
-                               UserActionGetSerializer)
+from users.serializers import (SubscriptionSerializer, UserActionGetSerializer)
 
 
 class CustomUserViewSet(UserViewSet):
     """Класс регистрации и работы с пользователями и подписками на авторов"""
     queryset = User.objects.all()
-    serializer_class = CustomUserSerializer
+    serializer_class = UserActionGetSerializer
     permission_classes = (AllowAny,)
 
     @action(detail=False, url_path='me', permission_classes=[IsAuthenticated])
