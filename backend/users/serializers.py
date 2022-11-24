@@ -1,10 +1,11 @@
 from re import fullmatch
-
+from foodgram.settings import RECIPES_LIMIT
 from django.contrib.auth.hashers import make_password
 from django.core.exceptions import ValidationError
 from djoser.serializers import UserSerializer
 from recipes.models import Recipe
 from rest_framework import serializers
+from rest_framework.validators import UniqueTogetherValidator
 from users.models import Subscription, User
 
 
@@ -53,6 +54,21 @@ class UserActionGetSerializer(UserSerializer):
         return False  # Если пользователь аноним
 
 
+class SubscriptionSerializer(serializers.ModelSerializer):
+    """Сериализатор для модели Subscription."""
+
+    class Meta:
+        model = Subscription
+        fields = '__all__'
+        validators = [
+            UniqueTogetherValidator(
+                queryset=Subscription.objects.all(),
+                fields=('author', 'user'),
+                message='Вы уже подписывались на этого автора'
+            )
+        ]
+
+
 class RecipePartInfoSerializer(serializers.ModelSerializer):
     """Класс рецептов с минимальным количеством информации."""
 
@@ -61,7 +77,7 @@ class RecipePartInfoSerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'image', 'cooking_time')
 
 
-class SubscriptionSerializer(UserActionGetSerializer):
+class SubscriptionShowSerializer(UserActionGetSerializer):
     """Класс получения данных подписок на авторов."""
     is_subscribed = serializers.SerializerMethodField()
     recipes = serializers.SerializerMethodField()
@@ -72,13 +88,11 @@ class SubscriptionSerializer(UserActionGetSerializer):
         fields = ('email', 'id', 'username', 'first_name', 'last_name',
                   'is_subscribed', 'recipes', 'recipes_count')
 
-    def get_recipes(self, obj):
-        limit = self.context['request'].query_params.get('recipes_limit')
-        if limit is None:
-            recipes = obj.recipes.all()
-        else:
-            recipes = obj.recipes.all()[:int(limit)]
-        return RecipePartInfoSerializer(recipes, many=True).data
+    def get_recipes(self, object):
+        author_recipes = object.recipes.all()[:RECIPES_LIMIT]
+        return RecipePartInfoSerializer(
+            author_recipes, many=True
+        ).data
 
-    def get_recipes_count(self, obj):
-        return obj.recipes.count()
+    def get_recipes_count(self, object):
+        return object.recipes.count()

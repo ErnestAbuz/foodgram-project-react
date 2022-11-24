@@ -7,6 +7,7 @@ from rest_framework.response import Response
 from api.pagination import ForPageNumberPagination
 from users.models import Subscription, User
 from users.serializers import (CustomUserSerializer, SubscriptionSerializer,
+                               SubscriptionShowSerializer,
                                UserActionGetSerializer)
 
 
@@ -30,7 +31,7 @@ class CustomUserViewSet(UserViewSet):
         result_pages = self.paginate_queryset(
             queryset=authors, request=request
         )
-        serializer = SubscriptionSerializer(
+        serializer = SubscriptionShowSerializer(
             result_pages, context={'request': request}, many=True
         )
         return self.get_paginated_response(serializer.data)
@@ -40,26 +41,20 @@ class CustomUserViewSet(UserViewSet):
             permission_classes=[IsAuthenticated])
     def subscribe(self, request, id):
         author = get_object_or_404(User, id=id)
-        user = request.user
-        subscription = Subscription.objects.filter(author=author, user=user)
-        if user.is_anonymous:
-            return Response(status=status.HTTP_401_UNAUTHORIZED)
-        if request.method == 'GET':
-            if subscription.exists():
-                data = {
-                    'errors': ('Вы подписаны на этого автора, '
-                               'или пытаетесь подписаться на себя.')}
-                return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
-            Subscription.objects.create(user=user, author=author)
+        if request.method == 'POST':
             serializer = SubscriptionSerializer(
-                author,
-                context={'request': request}
+                data={'follower': request.user.id, 'author': author.id}
             )
-            return Response(serializer.data,
-                            status=status.HTTP_201_CREATED)
-        if request.method == 'DELETE':
-            if not subscription.exists():
-                data = {'errors': 'Вы не подписаны на данного автора.'}
-                return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
-            subscription.delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            author_serializer = SubscriptionShowSerializer(
+                author, context={'request': request}
+            )
+            return Response(
+                author_serializer.data, status=status.HTTP_201_CREATED
+            )
+        subscription = get_object_or_404(
+            Subscription, subscriber=request.user, author=author
+        )
+        subscription.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
