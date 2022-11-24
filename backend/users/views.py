@@ -2,9 +2,9 @@ from django.shortcuts import get_object_or_404
 from djoser.views import UserViewSet
 from rest_framework import status
 from rest_framework.decorators import action
+from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
-from api.pagination import ForPageNumberPagination
 from users.models import Subscription, User
 from users.serializers import (CustomUserSerializer, SubscriptionSerializer,
                                UserActionGetSerializer)
@@ -15,7 +15,6 @@ class CustomUserViewSet(UserViewSet):
     queryset = User.objects.all()
     serializer_class = CustomUserSerializer
     permission_classes = (AllowAny,)
-    pagination_class = ForPageNumberPagination
 
     @action(detail=False, url_path='me', permission_classes=[IsAuthenticated])
     def me(self, request):
@@ -27,12 +26,13 @@ class CustomUserViewSet(UserViewSet):
             permission_classes=[IsAuthenticated])
     def subscriptions(self, request):
         authors = User.objects.filter(author__user=request.user)
-        result_pages = self.paginate_queryset(queryset=authors,
-                                              request=request)
+        paginator = LimitOffsetPagination()
+        result_pages = paginator.paginate_queryset(queryset=authors,
+                                                   request=request)
         context = {'request': self.request}
         serializer = SubscriptionSerializer(result_pages, context=context,
                                             many=True)
-        return self.get_paginated_response(serializer.data)
+        return paginator.get_paginated_response(serializer.data)
 
     @action(methods=['post', 'delete'], detail=False,
             url_path='(?P<pk>[^/.]+)/subscribe',
