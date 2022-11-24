@@ -57,7 +57,7 @@ class CustomUserViewSet(UserViewSet):
             )
             return Response(serializer.data,
                             status=status.HTTP_201_CREATED)
-        elif request.method == 'DELETE':
+        if request.method == 'DELETE':
             if not subscription.exists():
                 data = {'errors': 'Вы не подписаны на данного автора.'}
                 return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
