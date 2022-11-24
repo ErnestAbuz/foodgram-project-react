@@ -16,14 +16,15 @@ class CustomUserViewSet(UserViewSet):
     serializer_class = CustomUserSerializer
     permission_classes = (AllowAny,)
 
-    @action(detail=False, url_path='me', permission_classes=[IsAuthenticated])
+    @action(detail=False, methods=['get', 'patch'],
+            url_path='me', permission_classes=[IsAuthenticated])
     def me(self, request):
         context = {'request': self.request}
         serializer = UserActionGetSerializer(request.user, context=context)
         return Response(serializer.data)
 
     @action(detail=False, url_path='subscriptions',
-            permission_classes=[IsAuthenticated])
+            methods=['get'], permission_classes=[IsAuthenticated])
     def subscriptions(self, request):
         authors = User.objects.filter(author__user=request.user)
         paginator = LimitOffsetPagination()
@@ -34,7 +35,7 @@ class CustomUserViewSet(UserViewSet):
                                             many=True)
         return paginator.get_paginated_response(serializer.data)
 
-    @action(methods=['post', 'delete'], detail=False,
+    @action(methods=['post', 'delete'], detail=True,
             url_path='(?P<pk>[^/.]+)/subscribe',
             permission_classes=[IsAuthenticated])
     def subscribe(self, request, pk):
