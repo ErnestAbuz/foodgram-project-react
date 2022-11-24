@@ -1,5 +1,5 @@
 from re import fullmatch
-
+from foodgram.settings import RECIPES_LIMIT
 from django.contrib.auth.hashers import make_password
 from django.core.exceptions import ValidationError
 from djoser.serializers import UserSerializer
@@ -75,6 +75,7 @@ class SubscriptionSerializer(UserActionGetSerializer):
     def get_recipes(self, value):
         serialized_recipes = []
         recipes = Recipe.objects.filter(author=value)
+        recipes = recipes[:RECIPES_LIMIT]
         for recipe in recipes:
             serialized_recipe = RecipePartInfoSerializer(recipe)
             serialized_recipes.append(serialized_recipe.data)
