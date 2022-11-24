@@ -1,6 +1,7 @@
 from api.filters import IngredientSearchFilterSet, RecipeFilterSet
 from api.serializers import (IngredientSerializer, RecipeSerializer,
                              RecipeCreateSerializer, TagSerializer)
+from api.pagination import ForPageNumberPagination
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from recipes.models import Favorite, Ingredient, Recipe, ShoppingCart, Tag
@@ -34,6 +35,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
     serializer_class = RecipeSerializer
     filterset_class = RecipeFilterSet
+    pagination_class = ForPageNumberPagination
 
     def get_serializer_class(self):
         if self.request.method == 'GET':
