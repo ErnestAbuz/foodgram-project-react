@@ -23,8 +23,7 @@ class CustomUserViewSet(UserViewSet):
         serializer = UserActionGetSerializer(request.user, context=context)
         return Response(serializer.data)
 
-    @action(detail=False, url_path='subscriptions',
-            methods=['get'], permission_classes=[IsAuthenticated])
+    @action(detail=False, methods=['get'], permission_classes=[IsAuthenticated])
     def subscriptions(self, request):
         authors = User.objects.filter(author__user=request.user)
         result_pages = self.paginate_queryset(queryset=authors,

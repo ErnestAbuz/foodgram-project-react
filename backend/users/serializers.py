@@ -73,12 +73,12 @@ class SubscriptionSerializer(UserActionGetSerializer):
                   'is_subscribed', 'recipes', 'recipes_count')
 
     def get_recipes(self, obj):
-        request = self.context.get('request')
-        limit = request.GET.get('recipes_limit')
-        queryset = Recipe.objects.filter(author=obj.author)
-        if limit:
-            queryset = queryset[:int(limit)]
-        return RecipePartInfoSerializer(queryset, many=True).data
+        limit = self.context['request'].query_params.get('recipes_limit')
+        if limit is None:
+            recipes = obj.recipes.all()
+        else:
+            recipes = obj.recipes.all()[:int(limit)]
+        return RecipePartInfoSerializer(recipes, many=True).data
 
-    def get_recipes_count(self, obj):
-        return Recipe.objects.filter(author=obj.author).count()
+    def get_recipes_count(self, value):
+        return len(Recipe.objects.filter(author=value))
