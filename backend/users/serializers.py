@@ -80,5 +80,5 @@ class SubscriptionSerializer(UserActionGetSerializer):
             recipes = obj.recipes.all()[:int(limit)]
         return RecipePartInfoSerializer(recipes, many=True).data
 
-    def get_recipes_count(self, value):
-        return len(Recipe.objects.filter(author=value))
+    def get_recipes_count(self, obj):
+        return obj.recipes.count()
