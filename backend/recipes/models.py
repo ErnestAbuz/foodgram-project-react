@@ -61,7 +61,6 @@ class IngredientsAmount(models.Model):
         return f'{self.ingredient}'
 
     class Meta:
-        unique_together = ('ingredient', 'amount')
         verbose_name = 'Кол-во ингредиентов'
         verbose_name_plural = 'Кол-во ингредиентов'
 
